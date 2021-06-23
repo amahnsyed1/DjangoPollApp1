@@ -1,11 +1,14 @@
 from django.http import HttpResponse, HttpResponseRedirect
 from django.http import Http404
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
 from django.views import generic
 from django.utils import timezone
+from django.contrib import messages
+from django.db.models import Q
 
-from .models import Choice, Question
+from .models import Choice, Question, Profile, Answered
+from django.contrib.auth.models import User
 # Create your views here.
 
 
@@ -34,7 +37,18 @@ class ResultsView(generic.DetailView):
 
 
 def vote(request, question_id):
+    user = request.user
     question = get_object_or_404(Question, pk=question_id)
+
+    f1 = Answered.objects.filter(user=user, question=question)
+
+    if f1.count() > 0:
+        messages.add_message(request, messages.WARNING, 'You have already voted in this poll!')
+        return HttpResponseRedirect(reverse('polls:results', args=(question.id,)))
+
+    a = Answered(user=user, question=question)
+    a.save()
+
     try:
         selected_choice = question.choice_set.get(pk=request.POST['choice'])
     except (KeyError, Choice.DoesNotExist):
