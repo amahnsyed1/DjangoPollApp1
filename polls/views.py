@@ -1,3 +1,5 @@
+import logging
+
 from django.http import HttpResponse, HttpResponseRedirect
 from django.http import Http404
 from django.shortcuts import get_object_or_404, render
@@ -5,7 +7,15 @@ from django.urls import reverse
 from django.views import generic
 from django.utils import timezone
 
+<<<<<<< Updated upstream
 from .models import Choice, Question
+=======
+from .models import Choice, Question, Profile, Answered
+from django.contrib.auth.models import User, Group
+from rest_framework import viewsets
+from rest_framework import permissions
+from .serializers import UserSerializer, GroupSerializer
+>>>>>>> Stashed changes
 # Create your views here.
 
 
@@ -34,7 +44,25 @@ class ResultsView(generic.DetailView):
 
 
 def vote(request, question_id):
+<<<<<<< Updated upstream
     question = get_object_or_404(Question, pk=question_id)
+=======
+    logger = logging.getLogger(__name__)
+
+    user = request.user
+    question = get_object_or_404(Question, pk=question_id)
+
+    f1 = Answered.objects.filter(user=user, question=question)
+
+    if f1.count() > 0:
+        messages.add_message(request, messages.WARNING, 'You have already voted in this poll!')
+        logger.error('Something went wrong!')
+        return HttpResponseRedirect(reverse('polls:results', args=(question.id,)))
+
+    a = Answered(user=user, question=question)
+    a.save()
+
+>>>>>>> Stashed changes
     try:
         selected_choice = question.choice_set.get(pk=request.POST['choice'])
     except (KeyError, Choice.DoesNotExist):
