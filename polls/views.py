@@ -7,15 +7,13 @@ from django.urls import reverse
 from django.views import generic
 from django.utils import timezone
 
-<<<<<<< Updated upstream
-from .models import Choice, Question
-=======
+
 from .models import Choice, Question, Profile, Answered
 from django.contrib.auth.models import User, Group
 from rest_framework import viewsets
 from rest_framework import permissions
 from .serializers import UserSerializer, GroupSerializer
->>>>>>> Stashed changes
+
 # Create your views here.
 
 
